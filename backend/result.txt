@@ -1,0 +1,52 @@
+Q: What year did Tara FelanDurotoye found House of Tara International (HOTI)?
+O1: 1977
+O2: 1998
+O3: 2004
+O4: 2013
+C: 1998
+E: The text states, "While still an undergraduate at LASU, Tara founded House of Tara in 1998 at age 20..."
+D: easy
+
+---
+
+Q: What was one of Tara FelanDurotoye's early challenges in growing her business?
+O1: Difficulty in finding qualified employees
+O2: Lack of recognition for the beauty business
+O3: Excessive government regulations
+O4: Intense competition from established brands
+C: Lack of recognition for the beauty business
+E: The text mentions, "Tara faced challenges such as lack of recognition for the beauty business, difficulty accessing loans, and infrastructural barriers."
+D: medium
+
+---
+
+Q: How many products did House of Tara develop under Tara FelanDurotoye's leadership?
+O1: Around 20
+O2: More than 270
+O3: Less than 50
+O4: Exactly 100
+C: More than 270
+E: The text states, "Under Tara’s leadership, House of Tara grew significantly, developing more than 270 products..."
+D: easy
+
+---
+
+Q: Which of the following is identified as a key lesson for youth and women entrepreneurs from Tara FelanDurotoye's story?
+O1: Always seek venture capital funding
+O2: Focus solely on traditional industries
+O3: Turn passion into business
+O4: Prioritize rapid expansion over sustainability
+C: Turn passion into business
+E: The text lists "turn passion into business" as one of the lessons that stand out from Tara's story.
+D: medium
+
+---
+
+Q: Tara FelanDurotoye's entrepreneurial journey is described as more than just a business success story, but also a movement of what?
+O1: Technological innovation
+O2: Cultural preservation
+O3: Economic downfall
+O4: Empowerment
+C: Empowerment
+E: The conclusion states, "Tara FelanDurotoye’s journey is more than a business success story—it is a movement of empowerment."
+D: easy

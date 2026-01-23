@@ -82,7 +82,7 @@ const DocumentDetailPage = () => {
   };
 
   const renderChat = () => {
-    return <ChatInterface/>;
+    return <ChatInterface />;
   };
 
   const renderAiActions = () => {
@@ -94,7 +94,7 @@ const DocumentDetailPage = () => {
   };
 
   const renderQuizzesTab = () => {
-    return <QuizManager documentId={id} />;
+    return <QuizManager documentId={id} documentTitle={document?.title} />;
   };
 
   const tabs = [

@@ -62,7 +62,7 @@ export const generateFlashcards = async (text, count = 10) => {
 
     return flashcards.slice(0, count);
   } catch (err) {
-    console.error("Gemini API error:", err);
+    handleGeminiError(err);
     throw new Error("Failed to generate flashcards");
   }
 };
@@ -75,7 +75,7 @@ export const generateQuiz = async (text, numQuestions = 5) => {
   O2: [Option 2]
   O3: [Option 3]
   O4: [Option 4]
-  C: [Correct option - *exactly* as written above]
+  C: [Correct option - *exactly* as written above. Not this - C: O3: Law. Do this instead - C: Law ]
   E: [Brief explanation]
   D: [Difficulty: easy, medium or hard]
   
@@ -138,7 +138,7 @@ export const generateQuiz = async (text, numQuestions = 5) => {
 
     return questions.slice(0, numQuestions);
   } catch (err) {
-    console.error("Gemini API error:", err);
+    handleGeminiError(err);
     throw new Error("Failed to generate quiz");
   }
 };
@@ -160,10 +160,10 @@ export const generateSummary = async (text) => {
       `./generated/${Date.now()}-newFlashcardGen-${crypto.randomUUID()}.txt`,
       response.text,
     );
-    
+
     return response.text;
   } catch (err) {
-    console.error("Gemini API error:", err);
+    handleGeminiError(err);
     throw new Error("Failed to generate summary");
   }
 };
@@ -195,7 +195,7 @@ export const chatWithContext = async (question, chunks) => {
     );
     return response.text;
   } catch (err) {
-    console.error("Gemini API error:", err);
+    handleGeminiError(err);
     throw new Error("Failed to process chat request");
   }
 };
@@ -220,7 +220,26 @@ export const explainConcept = async (concept, context) => {
     );
     return response.text;
   } catch (err) {
-    console.error("Gemini API error:", err);
+    handleGeminiError(err);
     throw new Error("Failed to generate explanation");
   }
 };
+
+function handleGeminiError(geminiError) {
+  const { error } = JSON.parse(geminiError.message) || {};
+  console.log(error)
+  if (error?.code === 429 || error?.status === "RESOURCE_EXHAUSTED") {
+    const tryAgainIn = (() => {
+      const r = error.details.find(
+        (detail) =>
+          detail["@type"] === "type.googleapis.com/google.rpc.RetryInfo",
+      );
+      const rTime = parseFloat(r?.retryDelay).toFixed()
+      return false ? `in ${rTime}s` : "tomorrow";
+    })();
+
+    throw new Error(
+      `We have hit our AI quota capacity due to high demand.\nQuota renews ${tryAgainIn}`,
+    );
+  }
+}

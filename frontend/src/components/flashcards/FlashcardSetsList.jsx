@@ -109,7 +109,7 @@ const FlashcardSetsList = ({
             {/* Delete Button */}
             <button
               onClick={(e) => handleDeleteRequest(e, set)}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all duration-200 md:opacity-0 group-hover:opacity-100"
             >
               <Trash2 className="w-4 h-4" strokeWidth={2} />
             </button>

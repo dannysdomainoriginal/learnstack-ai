@@ -152,8 +152,9 @@ const DocumentListPage = () => {
       );
     }
 
+    // Document  Grid
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 [&&]:min-[1024px]:max-[1300px]:grid-cols-3 xl:grid-cols-4 gap-5">
         {documents.map((doc) => (
           <DocumentCard
             key={doc._id}

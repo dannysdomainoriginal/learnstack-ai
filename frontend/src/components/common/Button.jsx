@@ -18,6 +18,8 @@ const Button = ({
     secondary: "bg-slate-100 text-slate-700 hover:bg-slate-200",
     outline:
       "bg-white border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300",
+    danger:
+      "bg-red-500 hover:bg-red-600 active:bg-red-700 focus:ring-red-500 text-white shadow-lg shadow-rose-500/25 hover:shadow-xl hover:shadow-red-500/30",
   };
 
   const sizes = {

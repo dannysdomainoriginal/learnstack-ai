@@ -132,6 +132,7 @@ const FlashcardManager = ({ documentId }) => {
             handleNextCard={handleNextCard}
             handlePrevCard={handlePrevCard}
             handleToggleStar={handleToggleStar}
+            backButtonAction={() => setSelectedSet(null)}
           />
         ) : (
           <FlashcardSetsList

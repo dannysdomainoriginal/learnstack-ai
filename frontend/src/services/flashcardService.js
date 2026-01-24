@@ -21,6 +21,16 @@ export const getSetsByDocument = async (documentId) => {
   }
 };
 
+export const getFlashcardSetById = async (id) => {
+  try {
+    const res = await api.get(apiPaths.flashcards.getFlashcardSetById(id));
+
+    return res.data;
+  } catch (error) {
+    throw error.response?.data || { error: "Error fetching your flashcard" };
+  }
+};
+
 export const reviewFlashcard = async (cardId, cardIndex) => {
   try {
     const res = await api.post(apiPaths.flashcards.reviewFlashcard(cardId), {

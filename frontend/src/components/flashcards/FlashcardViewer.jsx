@@ -5,30 +5,33 @@ import Flashcard from "./Flashcard";
 const FlashcardViewer = ({
   selectedSet,
   currentCardIndex,
-  setSelectedSet,
   handleNextCard,
   handlePrevCard,
   handleToggleStar,
+  backButtonAction,
+  flashcardPage,
 }) => {
   const currentCard = selectedSet.cards[currentCardIndex];
 
   return (
     <div className="space-y-8">
       {/* Back Button */}
-      <button
-        className="group inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
-        onClick={() => setSelectedSet(null)}
-      >
-        <ArrowLeft
-          className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
-          strokeWidth={2}
-        />
-        Back to Sets
-      </button>
+      {!flashcardPage && (
+        <button
+          className="group inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
+          onClick={backButtonAction}
+        >
+          <ArrowLeft
+            className="w-4 h-4 translate-x-1 group-hover:-translate-x-1 transition-transform duration-200"
+            strokeWidth={2}
+          />
+          Back to Sets
+        </button>
+      )}
 
       {/* Flashcard Display */}
       <div className="flex flex-col items-center space-y-8">
-        <div className="w-full max-w-2xl">
+        <div className={`w-full ${!flashcardPage ? "max-w-2xl" : "max-w-3xl"}`}>
           <Flashcard
             key={currentCard?._id}
             flashcard={currentCard}

@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const flashcardSchema = new mongoose.Schema(
   {
+    title: {
+      type: String,
+      required: true
+    },
+
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

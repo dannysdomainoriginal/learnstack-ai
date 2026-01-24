@@ -33,6 +33,29 @@ export const getAllFlashcardSets = async (req, res) => {
   });
 };
 
+// @desc Get a flashcard by id ( for independent flashcard pages )
+// @route GET /api/flashcards/:cardId/page
+// @access Private
+export const getFlashcardSetById = async (req, res) => {
+  const flashcard = await Flashcard.findOne({
+    _id: req.params.cardId,
+    userId: req.user._id,
+  });
+
+  if (!flashcard) {
+    return res.status(404).json({
+      success: false,
+      error: "Flashcard was not found",
+      status: 404,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: flashcard,
+  });
+};
+
 // @desc Mark flashcard as reviewed
 // @route POST /api/flashcards/:cardId/review
 // @access Private

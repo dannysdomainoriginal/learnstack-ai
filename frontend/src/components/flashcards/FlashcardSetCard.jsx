@@ -7,7 +7,9 @@ const FlashcardSetCard = ({ flashcardSet, index }) => {
   const navigate = useNavigate();
 
   const handleStudyNow = () => {
-    navigate(`/documents/${flashcardSet.documentId._id}#flashcards`);
+    flashcardSet.documentId?._id
+      ? navigate(`/documents/${flashcardSet.documentId._id}#flashcards`)
+      : navigate(`/flashcards/${flashcardSet._id}`);
   };
 
   const reviewedCount = flashcardSet.cards.filter(
@@ -34,7 +36,7 @@ const FlashcardSetCard = ({ flashcardSet, index }) => {
               className="text-base font-semibold text-slate-900 line-clamp-2 mb-1 truncate"
               title={flashcardSet?.documentId?.title}
             >
-              {flashcardSet?.documentId?.title ?? `Flashcard Set ${index}`}
+              {flashcardSet?.title ?? flashcardSet?.documentId?.title}
             </h3>
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
               Created {moment(flashcardSet.createdAt).fromNow()}
@@ -75,7 +77,10 @@ const FlashcardSetCard = ({ flashcardSet, index }) => {
               </span>
             </div>
             <div className="relative h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div className="absolute inset-y-0 left-0 bg-linear-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500 ease-out" style={{ width: `${progressPercentage}%` }} />
+              <div
+                className="absolute inset-y-0 left-0 bg-linear-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${progressPercentage}%` }}
+              />
             </div>
           </div>
         )}

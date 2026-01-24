@@ -226,6 +226,14 @@ export const explainConcept = async (concept, context) => {
 };
 
 function handleGeminiError(geminiError) {
+  console.log(geminiError)
+  
+  try {
+    JSON.parse(geminiError.message);
+  } catch (err) {
+    return
+  }
+
   const { error } = JSON.parse(geminiError.message) || {};
   console.log(error)
   if (error?.code === 429 || error?.status === "RESOURCE_EXHAUSTED") {

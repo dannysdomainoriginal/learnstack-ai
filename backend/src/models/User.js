@@ -16,7 +16,10 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please provide an email"],
       unique: true,
       lowercase: true,
-      match: [/^/, "Please provide a valid email"],
+      match: [
+        /^[A-Za-z0-9._%+-]+@[/^[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+        "Please provide a valid email",
+      ],
     },
 
     password: {
@@ -33,7 +36,7 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 userSchema.pre("save", async function () {

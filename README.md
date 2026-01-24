@@ -3,7 +3,7 @@
 A modern web application for creating, managing, and learning from AI-generated flashcards and quizzes. Learnstack AI leverages AI to automatically generate study materials from documents, providing an interactive, gamified learning experience with progress tracking, flashcard reviewing, and quiz creation. Built with **React**, **Tailwind CSS**, and **Node.js/Express**, it combines smooth UI transitions, dynamic content, and a green-themed dashboard for a seamless study workflow.
 
 ### Features:
-
+o
 - AI-powered flashcard and quiz generation from documents
 - Interactive flashcard viewer with flip, star, and review functionality
 - Dashboard with learning stats and recent activity tracking

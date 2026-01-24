@@ -53,17 +53,14 @@ const App = () => {
             <Route path="/documents/:id" element={<DocumentDetailPage />} />
             <Route path="/flashcards" element={<FlashcardsListPage />} />
             <Route path="/quizzes" element={<QuizListPage />} />
-            <Route
-              path="/documents/:id/flashcards"
-              element={<FlashcardPage />}
-            />
+            <Route path="/flashcards/:setId" element={<FlashcardPage />} />
             <Route path="/quizzes/:quizId" element={<QuizTakePage />} />
             <Route
               path="/quizzes/:quizId/results"
               element={<QuizResultPage />}
             />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/ai-files" element={<GeneratedFilesPage />} />
+            <Route path="/admin/ai-files" element={<GeneratedFilesPage />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

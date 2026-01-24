@@ -29,6 +29,7 @@ export const apiPaths = {
   flashcards: {
     getAllFlashcardSets: "/api/flashcards",
     getSetsByDocument: (documentId) => `/api/flashcards/${documentId}`,
+    getFlashcardSetById: (cardId) => `/api/flashcards/${cardId}/page`,
     reviewFlashcard: (cardId) => `/api/flashcards/${cardId}/review`,
     toggleStar: (cardId) => `/api/flashcards/${cardId}/star`,
     deleteFlashcardSet: (id) => `/api/flashcards/${id}`,

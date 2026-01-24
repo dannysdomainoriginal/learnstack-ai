@@ -133,8 +133,8 @@ export const updateProfile = async (req, res) => {
 
   const user = await User.findById(req.user._id)
 
-  if (username) user.username = username
-  if (email) user.email = email
+  if (username?.trim()) user.username = username?.trim()
+  if (email?.trim()) user.email = email?.trim()
   if (profileImage) user.profileImage = profileImage
 
   await user.save()

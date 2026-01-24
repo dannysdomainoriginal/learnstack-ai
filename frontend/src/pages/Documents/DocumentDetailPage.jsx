@@ -33,6 +33,26 @@ const DocumentDetailPage = () => {
     fetchDocumentDetails();
   }, []);
 
+  useEffect(() => {
+    const getTabFromHash = () => {
+      const hash = window.location.hash
+      const map = {
+        "chat": "Chat",
+        "quizzes": "Quizzes",
+        "flashcards": "Flashcards",
+        "ai-actions": "Ai Actions",
+      }
+
+      if (hash) {
+        if (map[hash.slice(1)]) {
+          setActiveTab(map[hash.slice(1)])
+        }
+      }
+    }
+
+    getTabFromHash()
+  }, [])
+
   const renderContent = () => {
     if (loading) {
       return <Spinner />;

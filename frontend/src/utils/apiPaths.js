@@ -35,6 +35,7 @@ export const apiPaths = {
   },
 
   quizzes: {
+    getAllQuizzes: "/api/quizzes",
     getQuizzesByDocument: (documentId) => `/api/quizzes/${documentId}`,
     getQuizById: (id) => `/api/quizzes/quiz/${id}`,
     submitQuiz: (id) => `/api/quizzes/${id}/submit`,

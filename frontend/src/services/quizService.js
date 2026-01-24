@@ -1,6 +1,15 @@
 import api from "../utils/axiosInstance";
 import { apiPaths } from "../utils/apiPaths";
 
+export const getAllQuizzes = async () => {
+  try {
+    const res = await api.get(apiPaths.quizzes.getAllQuizzes);
+    return res.data;
+  } catch (error) {
+    throw error.response?.data || { error: "There was an error fetching your quizzes" };
+  }
+};
+
 export const getQuizzesByDocument = async (documentId) => {
   try {
     const res = await api.get(

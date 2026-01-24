@@ -21,6 +21,7 @@ import ProfilePage from "./pages/Profile/ProfilePage";
 import GeneratedFilesPage from "./pages/Admin/GeneratedFilesPage";
 
 import { useAuth } from "./context/AuthContext";
+import QuizListPage from "./pages/Quizzes/QuizListPage";
 
 const App = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -51,6 +52,7 @@ const App = () => {
             <Route path="/documents" element={<DocumentListPage />} />
             <Route path="/documents/:id" element={<DocumentDetailPage />} />
             <Route path="/flashcards" element={<FlashcardsListPage />} />
+            <Route path="/quizzes" element={<QuizListPage />} />
             <Route
               path="/documents/:id/flashcards"
               element={<FlashcardPage />}

@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, FileText, User, LogOut, BrainCircuit, BookOpen, X } from 'lucide-react'
+import { LayoutDashboard, FileText, User, LogOut, BrainCircuit, BookOpen, X, MessageCircleQuestionMark } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
 const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
@@ -15,6 +15,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const navLinks = [
     { to: "/dashboard", icon: LayoutDashboard, text: "Dashboard" },
     { to: "/documents", icon: FileText, text: "Documents" },
+    { to: "/quizzes", icon: MessageCircleQuestionMark, text: "Quizzes" },
     { to: "/flashcards", icon: BookOpen, text: "Flashcards" },
     { to: "/profile", icon: User, text: "Profile" }
   ]

@@ -15,6 +15,21 @@ export const getQuizzes = async (req, res) => {
   });
 };
 
+// @desc Get all quizzes for a user
+// @route GET /api/quizzes
+// @access Private
+export const getAllQuizzes = async (req, res) => {
+  const quizzes = await Quiz.find({ userId: req.user._id })
+    .populate("documentId", "title")
+    .sort({ createdAt: -1 });
+
+  res.status(200).json({
+    success: true,
+    count: quizzes.length,
+    data: quizzes,
+  });
+};
+
 export const getQuizById = async (req, res) => {
   const quiz = await Quiz.findOne({
     _id: req.params.id,
@@ -88,7 +103,7 @@ export const submitQuiz = async (req, res) => {
     }
   });
 
-  const score = Math.round(correctCount / quiz.questions.length);
+  const score = Math.round((correctCount / quiz.questions.length) * 100);
 
   // Update quiz
   quiz.userAnswers = userAnswers;
@@ -98,7 +113,7 @@ export const submitQuiz = async (req, res) => {
   await quiz.save();
 
   res.status(200).json({
-    success: ture,
+    success: true,
     data: {
       quizId: quiz._id,
       score,

@@ -75,7 +75,7 @@ export const generateQuiz = async (text, numQuestions = 5) => {
   O2: [Option 2]
   O3: [Option 3]
   O4: [Option 4]
-  C: [Correct option - *exactly* as written above. Not this - C: O3: Law. Do this instead - C: Law ]
+  C: [Correct option, *exactly* as written above. Don't change a thing. Also, do not do this - C: O3: Law. Do this instead - C: Law ]
   E: [Brief explanation]
   D: [Difficulty: easy, medium or hard]
   

@@ -33,7 +33,9 @@ export const uploadDocument = async (req, res, next) => {
       filePath: file.path,
       fileName: file.name,
       contentType: file.type,
-    });
+    }).catch((err) => {
+      throw new Error("Error uploading your document to our cloud storage.\nPlease try again.")
+    })
 
     // Create document in DB
     const document = await Document.create({

@@ -1,24 +1,36 @@
-import React from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, FileText, User, LogOut, BrainCircuit, BookOpen, X, MessageCircleQuestionMark } from 'lucide-react'
-import { useAuth } from '../../context/AuthContext'
+import React, { useEffect } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  FileText,
+  User,
+  LogOut,
+  BrainCircuit,
+  BookOpen,
+  X,
+  MessageCircleQuestionMark,
+  Settings2,
+} from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
-  const { logout } = useAuth()
-  const navigate = useNavigate()
+  const { isAdmin, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout()
-    navigate("/login")
-  }
+    logout();
+    navigate("/login");
+  };
 
   const navLinks = [
     { to: "/dashboard", icon: LayoutDashboard, text: "Dashboard" },
     { to: "/documents", icon: FileText, text: "Documents" },
     { to: "/quizzes", icon: MessageCircleQuestionMark, text: "Quizzes" },
     { to: "/flashcards", icon: BookOpen, text: "Flashcards" },
-    { to: "/profile", icon: User, text: "Profile" }
-  ]
+    { to: "/profile", icon: User, text: "Profile" },
+    ...(isAdmin ? [{ to: "/admin", icon: Settings2, text: "Admin" }] : []),
+  ];
+
   return (
     <>
       <div
@@ -92,13 +104,17 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             onClick={handleLogout}
             className="group cursor-pointer flex items-center gap-3 w-full px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all duration-200"
           >
-            <LogOut size={18} strokeWidth={2.5} className="transition-transform duration-200 group-hover:scale-110" />
+            <LogOut
+              size={18}
+              strokeWidth={2.5}
+              className="transition-transform duration-200 group-hover:scale-110"
+            />
             Logout
           </button>
         </div>
       </aside>
     </>
   );
-}
+};
 
-export default Sidebar
+export default Sidebar;

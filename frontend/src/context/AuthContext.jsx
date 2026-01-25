@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 
 const AuthContext = createContext();
 
@@ -53,7 +53,6 @@ export const AuthProvider = ({ children }) => {
 
     setUser(null);
     setIsAuthenticated(false);
-    window.location.href = "/";
   };
 
   const updateUser = (updates) => {
@@ -63,6 +62,10 @@ export const AuthProvider = ({ children }) => {
     setUser(profile);
   };
 
+  const isAdmin = useMemo(() => {
+    return !!user?.roles?.includes("admin");
+  }, [user]);
+
   const value = {
     user,
     loading,
@@ -71,6 +74,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateUser,
     checkAuthStatus,
+    isAdmin
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -129,6 +129,14 @@ const DocumentDetailPage = () => {
     return <Spinner />;
   }
 
+  if (location.href.includes("document-is-missing")) {
+    return (
+      <div className="text-red-400">
+        Your document has been deleted
+      </div>
+    )
+  }
+
   if (!document) {
     return (
       <div className="text-red-400">

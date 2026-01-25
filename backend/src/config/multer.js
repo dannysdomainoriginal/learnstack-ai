@@ -1,38 +1,60 @@
 import multer from "multer";
-import path from "path";
-import { fileURLToPath } from "url";
-import fs from "fs";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const uploadDir = path.join(__dirname, "../uploads/documents");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + crypto.randomUUID();
-    cb(null, `${uniqueSuffix}-${file.originalname}`);
+export const r2 = new S3Client({
+  region: "auto", // Cloudflare recommends "auto"
+  endpoint: process.env.R2_ENDPOINT, // e.g., "https://<accountid>.r2.cloudflarestorage.com"
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY,
+    secretAccessKey: process.env.R2_SECRET_KEY,
   },
 });
 
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === "application/pdf") {
-    cb(null, true);
-  } else {
-    cb(new Error("Only PDF files are allowed"), false);
-  }
+// Custom storage engine
+const multerR2Storage = {
+  _handleFile: async (req, file, cb) => {
+    try {
+      const uniqueSuffix = Date.now() + "-" + crypto.randomUUID();
+      const key = `documents/${uniqueSuffix}-${file.originalname}`;
+
+      await r2.send(
+        new PutObjectCommand({
+          Bucket: process.env.R2_BUCKET,
+          Key: key,
+          Body: file.stream,
+          ContentType: file.mimetype,
+        }),
+      );
+
+      // Build a "disk-like" file object
+      const fileRecord = {
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size || 0, // Multer may not know size in streaming
+        key,
+        url: `https://${process.env.R2_BUCKET}.${process.env.R2_ENDPOINT.replace(/^https?:\/\//, "")}/${key}`,
+      };
+
+      console.log(fileRecord)
+
+      cb(null, fileRecord);
+    } catch (err) {
+      cb(err);
+    }
+  },
+
+  _removeFile: (req, file, cb) => {
+    // Optional: you could delete from R2 if needed
+    cb(null);
+  },
 };
 
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 },
+// Export Multer instance
+export const upload = multer({
+  storage: multerR2Storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "application/pdf") cb(null, true);
+    else cb(new Error("Only PDF files are allowed"), false);
+  },
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max
 });
-
-export default upload;

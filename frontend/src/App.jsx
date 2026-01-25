@@ -22,6 +22,8 @@ import GeneratedFilesPage from "./pages/Admin/GeneratedFilesPage";
 
 import { useAuth } from "./context/AuthContext";
 import QuizListPage from "./pages/Quizzes/QuizListPage";
+import AdminPage from "./pages/Admin/AdminPage";
+import AdminRoutes from "./components/admin/AdminRoutes";
 
 const App = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -60,7 +62,12 @@ const App = () => {
               element={<QuizResultPage />}
             />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/admin/ai-files" element={<GeneratedFilesPage />} />
+
+            {/* ADMIN ROUTES */}
+            <Route path="/admin" element={<AdminRoutes />}>
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/admin/ai-files" element={<GeneratedFilesPage />} />
+            </Route>
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

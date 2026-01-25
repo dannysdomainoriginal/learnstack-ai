@@ -45,6 +45,7 @@ export const register = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        roles: user.roles,
         profileImage: user.profileImage,
         createdAt: user.createdAt,
       },
@@ -97,6 +98,7 @@ export const login = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        roles: user.roles,
         profileImage: user.profileImage,
         createdAt: user.createdAt,
       },
@@ -118,9 +120,10 @@ export const getProfile = async (req, res) => {
       id: user._id,
       username: user.username,
       email: user.email,
+      roles: user.roles,
       profileImage: user.profileImage,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
     },
   });
 };
@@ -145,10 +148,13 @@ export const updateProfile = async (req, res) => {
       id: user._id,
       username: user.username,
       email: user.email,
-      profileImage: user.profileImage
+      roles: user.roles,
+      profileImage: user.profileImage,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     },
-    message: "Profile updated successfully"
-  })
+    message: "Profile updated successfully",
+  });
 };
 
 // @desc Change password

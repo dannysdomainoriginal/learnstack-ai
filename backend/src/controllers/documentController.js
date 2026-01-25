@@ -1,14 +1,17 @@
+// documentController.js
 import Document from "../models/Document.js";
 import Quiz from "../models/Quiz.js";
 import Flashcard from "../models/Flashcard.js";
-import { extractTextFromPDF } from "../utils/pdfParser.js";
+import { extractTextFromPDF } from "../utils/pdfParser.js"
 import { chunkText } from "../utils/textChunker.js";
-import fs from "fs/promises";
 import mongoose from "mongoose";
+import { uploadFile, deleteFile } from "../libraries/r2.js";
 
 export const uploadDocument = async (req, res, next) => {
+  let uploadedFile;
   try {
-    if (!req.file) {
+    const { file } = req.files;
+    if (!file) {
       return res.status(400).json({
         success: false,
         error: "Please upload a PDF file",
@@ -17,10 +20,7 @@ export const uploadDocument = async (req, res, next) => {
     }
 
     const { title } = req.body;
-
     if (!title) {
-      // Delete uploaded file
-      await fs.unlink(req.file.path);
       return res.status(400).json({
         success: false,
         error: "Please provide a document title",
@@ -28,30 +28,29 @@ export const uploadDocument = async (req, res, next) => {
       });
     }
 
-    // Construct the URL for the uploaded file
-    const baseUrl = `http://localhost:${process.env.PORT || 8000}`;
-    const fileUrl = `${baseUrl}/uploads/documents/${req.file.filename}`;
+    // Upload to Cloudflare R2
+    uploadedFile = await uploadFile({
+      filePath: file.path,
+      fileName: file.name,
+      contentType: file.type,
+    });
 
-    // Create document in the db
+    // Create document in DB
     const document = await Document.create({
       userId: req.user._id,
       title,
-      fileName: req.file.originalname,
-      filePath: fileUrl,
-      diskPath: req.file.path,
-      fileSize: req.file.size,
+      fileName: file.name,
+      url: uploadedFile.url, // public URL
+      r2Key: uploadedFile.key, // R2 key
+      fileSize: file.size,
       status: "processing",
     });
 
-    // todo Process PDF in the background ( in production, use a queue like Bull )
-    processPDF(document._id, req.file.path).catch(async (err) => {
+    // Fire-and-forget PDF processing
+    processPDF(document._id, file.path).catch(async (err) => {
+      console.error(err);
       await document.deleteOne();
-      await fs.unlink(req.file.path).catch(() => {});
-      return res.status(500).json({
-        success: false,
-        error: "Error processing your pdf document",
-        status: 500,
-      });
+      await deleteFile(uploadedFile.key);
     });
 
     res.status(201).json({
@@ -60,23 +59,19 @@ export const uploadDocument = async (req, res, next) => {
       message: "Document uploaded successfully. Processing in progress...",
     });
   } catch (err) {
-    // Clean up file on error
-    if (req.file) {
-      await fs.unlink(req.file.path).catch(() => {});
-    }
+    // Clean up file from R2 if uploaded
+    if (uploadedFile) await deleteFile(uploadedFile.key);
     next(err);
   }
 };
 
-// processPDF service
-const processPDF = async (documentId, filePath) => {
+// processPDF service (unchanged signature, uses tmp file path)
+async function processPDF (documentId, filePath) {
   try {
     const { text } = await extractTextFromPDF(filePath);
 
-    // Create chunks
     const chunks = chunkText(text, 500, 50);
 
-    // Update document
     await Document.findByIdAndUpdate(documentId, {
       extractedText: text,
       chunks,
@@ -86,20 +81,14 @@ const processPDF = async (documentId, filePath) => {
     console.log(`Document ${documentId} processed successfully`);
   } catch (err) {
     console.error(`Error processing document ${documentId}:`, err);
-
-    await Document.findByIdAndUpdate(documentId, {
-      status: "failed",
-    });
-
+    await Document.findByIdAndUpdate(documentId, { status: "failed" });
     throw err;
   }
 };
 
 export const getDocuments = async (req, res) => {
   const documents = await Document.aggregate([
-    {
-      $match: { userId: new mongoose.Types.ObjectId(req.user._id) },
-    },
+    { $match: { userId: new mongoose.Types.ObjectId(req.user._id) } },
     {
       $lookup: {
         from: "flashcards",
@@ -122,24 +111,13 @@ export const getDocuments = async (req, res) => {
         quizCount: { $size: "$quizzes" },
       },
     },
-    {
-      $project: {
-        extractedText: 0,
-        chunks: 0,
-        flashcardSets: 0,
-        quizzes: 0,
-      },
-    },
-    {
-      $sort: { uploadedAt: -1 },
-    },
+    { $project: { extractedText: 0, chunks: 0, flashcardSets: 0, quizzes: 0 } },
+    { $sort: { uploadedAt: -1 } },
   ]);
 
-  res.status(200).json({
-    success: true,
-    count: documents.length,
-    data: documents,
-  });
+  res
+    .status(200)
+    .json({ success: true, count: documents.length, data: documents });
 };
 
 export const getDocumentById = async (req, res) => {
@@ -149,14 +127,11 @@ export const getDocumentById = async (req, res) => {
   });
 
   if (!document) {
-    res.status(404).json({
-      success: false,
-      error: "Document not found",
-      status: 404,
-    });
+    return res
+      .status(404)
+      .json({ success: false, error: "Document not found", status: 404 });
   }
 
-  // Get flashcardCounts and quizCounts
   const { _id: documentId } = document;
   const { _id: userId } = req.user;
 
@@ -183,18 +158,13 @@ export const deleteDocument = async (req, res) => {
   });
 
   if (!document) {
-    return res.status(404).json({
-      success: false,
-      error: "Document does not exist",
-      status: 404,
-    });
+    return res
+      .status(404)
+      .json({ success: false, error: "Document does not exist", status: 404 });
   }
 
-  // Delete file from disk
-  setImmediate(() => {
-    fs.unlink(document.diskPath).catch(() => {});
-  });
-
+  // Delete file from Cloudflare R2
+  await deleteFile(document.r2Key);
   await document.deleteOne();
 
   res.status(200).json({

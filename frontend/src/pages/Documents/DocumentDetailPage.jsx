@@ -58,11 +58,11 @@ const DocumentDetailPage = () => {
       return <Spinner />;
     }
 
-    if (!document?.filePath) {
+    if (!document?.url) {
       return <div className="text-center p-8">PDF not available.</div>;
     }
 
-    const pdfUrl = document.filePath;
+    const pdfUrl = document.url;
 
     return (
       <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">

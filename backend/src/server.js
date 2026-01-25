@@ -2,10 +2,12 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import path from "path";
+import os from "os";
 import morgan from "morgan";
 import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 import errorHandler from "./middleware/errorHandler.js";
+import formData from "express-form-data";
 
 import adminRoutes from "./routes/adminRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -26,7 +28,7 @@ app.use(
   cors({
     origin: process.env.FRONTEND_URL,
     credentials: true,
-  })
+  }),
 );
 app.use(morgan("dev"));
 app.use(express.json());
@@ -36,15 +38,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/generated", express.static(path.join(process.cwd(), "generated")));
 
-// Empty request body parser
-app.use((req, res, next) => {
-  if (!req.body) {
-    req.body = {};
-    console.log("Parsed request body");
-  }
-
-  next();
-});
+app.use(
+  formData.parse({
+    uploadDir: os.tmpdir(),
+    autoClean: true,
+  }),
+  formData.format(),
+);
 
 // Routes
 app.use("/api/admin", adminRoutes);

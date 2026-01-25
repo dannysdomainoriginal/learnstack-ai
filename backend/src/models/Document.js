@@ -18,12 +18,12 @@ const documentSchema = new mongoose.Schema({
     required: true
   },
 
-  filePath: {
+  url: {
     type: String,
     required: true
   },
 
-  diskPath: {
+  r2Key: {
     type: String,
     required: true
   },

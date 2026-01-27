@@ -24,6 +24,7 @@ import { useAuth } from "./context/AuthContext";
 import QuizListPage from "./pages/Quizzes/QuizListPage";
 import AdminPage from "./pages/Admin/AdminPage";
 import AdminRoutes from "./components/admin/AdminRoutes";
+import LibraryPage from "./pages/Library/LibraryPage";
 
 const App = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -62,15 +63,16 @@ const App = () => {
               element={<QuizResultPage />}
             />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/library" element={<LibraryPage />} />
 
             {/* ADMIN ROUTES */}
             <Route path="/admin" element={<AdminRoutes />}>
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/admin/ai-files" element={<GeneratedFilesPage />} />
             </Route>
-          </Route>
 
-          <Route path="*" element={<NotFoundPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
         </Routes>
       </Router>
     </div>

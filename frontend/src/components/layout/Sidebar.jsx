@@ -10,6 +10,7 @@ import {
   X,
   MessageCircleQuestionMark,
   Settings2,
+  Layers,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -28,6 +29,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
     { to: "/quizzes", icon: MessageCircleQuestionMark, text: "Quizzes" },
     { to: "/flashcards", icon: BookOpen, text: "Flashcards" },
     { to: "/profile", icon: User, text: "Profile" },
+    { to: "/library", icon: Layers, text: "Library" },
     ...(isAdmin ? [{ to: "/admin", icon: Settings2, text: "Admin" }] : []),
   ];
 

@@ -84,7 +84,9 @@ const LoginPage = () => {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">Password</label>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                Password
+              </label>
               <div className="relative group">
                 <div
                   className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 ${
@@ -110,12 +112,18 @@ const LoginPage = () => {
             {/* Error Message */}
             {error && (
               <div className="rounded-lg bg-red-50 border border-red-200 p-3">
-                <p className="text-xs text-red-600 font-medium text-center">{error}</p>
+                <p className="text-xs text-red-600 font-medium text-center">
+                  {error}
+                </p>
               </div>
             )}
 
             {/* Submit Button */}
-            <button onClick={handleSubmit} disabled={loading} className="group relative w-full h-12 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 hover:cursor-pointer active:scale-[0.98] text-white text-sm font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 shadow-lg shadow-emerald-500/25 overflow-hidden">
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="group relative w-full h-12 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 hover:cursor-pointer active:scale-[0.98] text-white text-sm font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 shadow-lg shadow-emerald-500/25 overflow-hidden"
+            >
               <span className="relative z-10 flex items-center justify-center gap-2">
                 {loading ? (
                   <>
@@ -125,7 +133,10 @@ const LoginPage = () => {
                 ) : (
                   <>
                     Sign In
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" strokeWidth={2.5} />
+                    <ArrowRight
+                      className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
+                      strokeWidth={2.5}
+                    />
                   </>
                 )}
               </span>
@@ -138,7 +149,10 @@ const LoginPage = () => {
           <div className="mt-8 pt-6 border-t border-slate-200/60">
             <p className="text-center text-sm text-slate-600">
               Don't have an account?{" "}
-              <Link to="/register" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors duration-200">
+              <Link
+                to="/register"
+                className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors duration-200"
+              >
                 Sign up
               </Link>
             </p>

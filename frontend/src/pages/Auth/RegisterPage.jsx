@@ -25,7 +25,7 @@ const RegisterPage = () => {
       const { data, message } = await authService.register(
         name,
         email,
-        password
+        password,
       );
 
       login(data.user, data.token);

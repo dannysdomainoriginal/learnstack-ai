@@ -28,7 +28,7 @@ export const register = async (username, email, password) => {
 export const getProfile = async () => {
   try {
     const res = await api.get(apiPaths.auth.getProfile);
-    return res.data
+    return res.data;
   } catch (error) {
     throw error.response?.data || { error: "Error fetching your profile" };
   }

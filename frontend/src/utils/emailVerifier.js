@@ -7,6 +7,6 @@ export const verifyEmail = async (email) => {
     .then((res) => res.data.disposable)
     .catch(() => false);
 
-  console.log(disposable)
-  return !disposable
+  console.log(disposable);
+  return !disposable;
 };

@@ -1,8 +1,7 @@
-// documentController.js
 import Document from "../models/Document.js";
 import Quiz from "../models/Quiz.js";
 import Flashcard from "../models/Flashcard.js";
-import { extractTextFromPDF } from "../utils/pdfParser.js"
+import { extractTextFromPDF } from "../utils/pdfParser.js";
 import { chunkText } from "../utils/textChunker.js";
 import mongoose from "mongoose";
 import { uploadFile, deleteFile } from "../libraries/r2.js";
@@ -34,8 +33,10 @@ export const uploadDocument = async (req, res, next) => {
       fileName: file.name,
       contentType: file.type,
     }).catch((err) => {
-      throw new Error("Error uploading your document to our cloud storage.\nPlease try again.")
-    })
+      throw new Error(
+        "Error uploading your document to our cloud storage.\nPlease try again.",
+      );
+    });
 
     // Create document in DB
     const document = await Document.create({
@@ -68,7 +69,7 @@ export const uploadDocument = async (req, res, next) => {
 };
 
 // processPDF service (unchanged signature, uses tmp file path)
-async function processPDF (documentId, filePath) {
+async function processPDF(documentId, filePath) {
   try {
     const { text } = await extractTextFromPDF(filePath);
 
@@ -86,7 +87,7 @@ async function processPDF (documentId, filePath) {
     await Document.findByIdAndUpdate(documentId, { status: "failed" });
     throw err;
   }
-};
+}
 
 export const getDocuments = async (req, res) => {
   const documents = await Document.aggregate([
@@ -166,7 +167,15 @@ export const deleteDocument = async (req, res) => {
   }
 
   // Delete file from Cloudflare R2
-  await deleteFile(document.r2Key);
+  const success = await deleteFile(document.r2Key);
+
+  if (!success) {
+    return res.status(500).json({
+      success: false,
+      error: `There was an error deleting your file.\nPlease try again`,
+    });
+  }
+
   await document.deleteOne();
 
   res.status(200).json({

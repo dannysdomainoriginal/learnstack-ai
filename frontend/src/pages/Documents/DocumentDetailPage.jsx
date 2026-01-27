@@ -35,23 +35,23 @@ const DocumentDetailPage = () => {
 
   useEffect(() => {
     const getTabFromHash = () => {
-      const hash = window.location.hash
+      const hash = window.location.hash;
       const map = {
-        "chat": "Chat",
-        "quizzes": "Quizzes",
-        "flashcards": "Flashcards",
+        chat: "Chat",
+        quizzes: "Quizzes",
+        flashcards: "Flashcards",
         "ai-actions": "Ai Actions",
-      }
+      };
 
       if (hash) {
         if (map[hash.slice(1)]) {
-          setActiveTab(map[hash.slice(1)])
+          setActiveTab(map[hash.slice(1)]);
         }
       }
-    }
+    };
 
-    getTabFromHash()
-  }, [])
+    getTabFromHash();
+  }, []);
 
   const renderContent = () => {
     if (loading) {
@@ -130,11 +130,7 @@ const DocumentDetailPage = () => {
   }
 
   if (location.href.includes("document-is-missing")) {
-    return (
-      <div className="text-red-400">
-        Your document has been deleted
-      </div>
-    )
+    return <div className="text-red-400">Your document has been deleted</div>;
   }
 
   if (!document) {

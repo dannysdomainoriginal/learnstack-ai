@@ -226,23 +226,23 @@ export const explainConcept = async (concept, context) => {
 };
 
 function handleGeminiError(geminiError) {
-  console.log(geminiError)
-  
+  console.log(geminiError);
+
   try {
     JSON.parse(geminiError.message);
   } catch (err) {
-    return
+    return;
   }
 
   const { error } = JSON.parse(geminiError.message) || {};
-  console.log(error)
+  console.log(error);
   if (error?.code === 429 || error?.status === "RESOURCE_EXHAUSTED") {
     const tryAgainIn = (() => {
       const r = error.details.find(
         (detail) =>
           detail["@type"] === "type.googleapis.com/google.rpc.RetryInfo",
       );
-      const rTime = parseFloat(r?.retryDelay).toFixed()
+      const rTime = parseFloat(r?.retryDelay).toFixed();
       return false ? `in ${rTime}s` : "tomorrow";
     })();
 

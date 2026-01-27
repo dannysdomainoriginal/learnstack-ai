@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, CheckCircle2, Send, CheckCircle2Icon } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+  Send,
+  CheckCircle2Icon,
+} from "lucide-react";
 import { quizService } from "../../services";
 import PageHeader from "../../components/common/PageHeader";
 import Spinner from "../../components/common/Spinner";
@@ -52,25 +58,32 @@ const QuizTakePage = () => {
   };
 
   const handleSubmitQuiz = async () => {
-    setSubmitting(true)
+    setSubmitting(true);
 
     try {
-      const formattedAnswers = Object.keys(selectedAnswers).map(questionId => {
-        const question = quiz.questions.find(q => q._id === questionId)
-        const questionIndex = quiz.questions.findIndex(q => q._id === questionId)
-        const optionIndex = selectedAnswers[questionId]
-        const selectedAnswer = question.options[optionIndex]
+      const formattedAnswers = Object.keys(selectedAnswers).map(
+        (questionId) => {
+          const question = quiz.questions.find((q) => q._id === questionId);
+          const questionIndex = quiz.questions.findIndex(
+            (q) => q._id === questionId,
+          );
+          const optionIndex = selectedAnswers[questionId];
+          const selectedAnswer = question.options[optionIndex];
 
-        return { questionIndex, selectedAnswer }
-      })
+          return { questionIndex, selectedAnswer };
+        },
+      );
 
-      const { message } = await quizService.submitQuiz(quizId, formattedAnswers)
-      toast.success(message)
-      navigate(`/quizzes/${quizId}/results`)
+      const { message } = await quizService.submitQuiz(
+        quizId,
+        formattedAnswers,
+      );
+      toast.success(message);
+      navigate(`/quizzes/${quizId}/results`);
     } catch (err) {
-      toast.error(err.error)
+      toast.error(err.error);
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   };
 
@@ -251,7 +264,8 @@ const QuizTakePage = () => {
         <div className="flex w-max min-w-full justify-center gap-2 px-2 pt-1">
           {quiz.questions.map((_, index) => {
             const isAnsweredQuestion = selectedAnswers.hasOwnProperty(
-            quiz.questions[index]._id);
+              quiz.questions[index]._id,
+            );
             const isCurrent = index === currentQuestionIndex;
 
             return (

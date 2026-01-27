@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+// userId
+// type: ["flashcard", "quiz", "explanation", "summary", "chat"]
+// tokensUsed
+// model
+// link to data ( based on type )
+// timestamps: true
+
 const documentSchema = new mongoose.Schema(
   {
     userId: {

@@ -33,7 +33,7 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       className={[baseStyles, variants[variant], sizes[size], className].join(
-        " "
+        " ",
       )}
     >
       {children}

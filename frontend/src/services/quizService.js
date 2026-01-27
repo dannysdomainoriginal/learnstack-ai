@@ -6,14 +6,18 @@ export const getAllQuizzes = async () => {
     const res = await api.get(apiPaths.quizzes.getAllQuizzes);
     return res.data;
   } catch (error) {
-    throw error.response?.data || { error: "There was an error fetching your quizzes" };
+    throw (
+      error.response?.data || {
+        error: "There was an error fetching your quizzes",
+      }
+    );
   }
 };
 
 export const getQuizzesByDocument = async (documentId) => {
   try {
     const res = await api.get(
-      apiPaths.quizzes.getQuizzesByDocument(documentId)
+      apiPaths.quizzes.getQuizzesByDocument(documentId),
     );
     return res.data;
   } catch (error) {

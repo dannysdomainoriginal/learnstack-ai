@@ -41,23 +41,23 @@ router.post("/register", registerValidation, validate, authController.register);
 router.post("/login", loginValidation, validate, authController.login);
 
 // Protected routes
-router.get("/profile", protect, authController.getProfile)
-router.put("/profile", protect, authController.updateProfile)
-router.post("/change-password", protect, authController.changePassword)
+router.get("/profile", protect, authController.getProfile);
+router.put("/profile", protect, authController.updateProfile);
+router.post("/change-password", protect, authController.changePassword);
 
-export default router
+export default router;
 
 // Send errors on validation
-function validate (req, res, next) {
+function validate(req, res, next) {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
     return res.status(400).json({
       success: false,
       error: errors.array()[0].msg,
-      status: 400
+      status: 400,
     });
   }
 
   next();
-};
+}

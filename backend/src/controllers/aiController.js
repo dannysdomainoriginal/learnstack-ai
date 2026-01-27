@@ -35,7 +35,7 @@ export const generateFlashcards = async (req, res) => {
 
   const cards = await geminiService.generateFlashcards(
     document.extractedText,
-    parseInt(count)
+    parseInt(count),
   );
 
   // Save to db
@@ -90,7 +90,7 @@ export const generateQuiz = async (req, res) => {
   // Generate quiz using Gemini
   const questions = await geminiService.generateQuiz(
     document.extractedText,
-    parseInt(numQuestions)
+    parseInt(numQuestions),
   );
 
   // Save to db
@@ -189,7 +189,7 @@ export const chat = async (req, res) => {
   const chatHistory = await ChatHistory.findOneAndUpdate(
     { userId: req.user._id, documentId: document._id },
     { $setOnInsert: { messages: [] } },
-    { upsert: true, new: true }
+    { upsert: true, new: true },
   );
 
   // Generate responses
@@ -208,7 +208,7 @@ export const chat = async (req, res) => {
       content: answer,
       timestamp: new Date(),
       relevantChunks: chunkIndices,
-    }
+    },
   );
 
   await chatHistory.save();

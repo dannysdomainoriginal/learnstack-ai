@@ -40,6 +40,7 @@ const errorHandler = (err, req, res, next) => {
     status = 401;
   }
 
+  console.log("wow");
   if (status === 500) {
     console.error("Error:", {
       message: err.message,
@@ -51,8 +52,8 @@ const errorHandler = (err, req, res, next) => {
     success: false,
     error: message,
     status,
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack})
-  })
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+  });
 };
 
 export default errorHandler;

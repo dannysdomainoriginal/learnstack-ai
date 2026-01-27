@@ -78,7 +78,7 @@ const ChatInterface = () => {
   };
 
   const renderMessage = (msg, index) => {
-    const isUser = msg.role === "user"
+    const isUser = msg.role === "user";
 
     return (
       <div
@@ -90,16 +90,19 @@ const ChatInterface = () => {
             <Sparkles className="w-4 h-4 text-white" strokeWidth={2} />
           </div>
         )}
-        <div className={`max-w-lg p-4 rounded-2xl shadow-sm ${
-          isUser ? "bg-linear-to-br from-emerald-500 to-teal-500 text-white rounded-br-md"
-          : "bg-white border border-slate-200/60 text-slate-800 rounded-bl-md"
-          }`}>
+        <div
+          className={`max-w-lg p-4 rounded-2xl shadow-sm ${
+            isUser
+              ? "bg-linear-to-br from-emerald-500 to-teal-500 text-white rounded-br-md"
+              : "bg-white border border-slate-200/60 text-slate-800 rounded-bl-md"
+          }`}
+        >
           {isUser ? (
             <p className="text-sm leading-relaxed">{msg.content}</p>
           ) : (
-              <div className="prose prose-sm max-w-none prose-slate">
-                <MarkdownRenderer content={msg.content} />
-              </div>
+            <div className="prose prose-sm max-w-none prose-slate">
+              <MarkdownRenderer content={msg.content} />
+            </div>
           )}
         </div>
         {isUser && (

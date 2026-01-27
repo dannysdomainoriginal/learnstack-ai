@@ -1,40 +1,43 @@
-import { useState, useEffect } from 'react'
-import { flashcardService } from '../../services'
-import PageHeader from '../../components/common/PageHeader'
-import Spinner from '../../components/common/Spinner'
-import EmptyState from "../../components/common/EmptyState"
-import toast from 'react-hot-toast'
-import FlashcardSetCard from '../../components/flashcards/FlashcardSetCard'
+import { useState, useEffect } from "react";
+import { flashcardService } from "../../services";
+import PageHeader from "../../components/common/PageHeader";
+import Spinner from "../../components/common/Spinner";
+import EmptyState from "../../components/common/EmptyState";
+import toast from "react-hot-toast";
+import FlashcardSetCard from "../../components/flashcards/FlashcardSetCard";
 
 const FlashcardsListPage = () => {
-  const [flashcardSets, setFlashcardSets] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [flashcardSets, setFlashcardSets] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFlashcardSets = async () => {
       try {
-        const { data } = await flashcardService.getAllFlashcardSets()
-        console.log("fetchFlashcardSets___", data)
-        setFlashcardSets(data)
+        const { data } = await flashcardService.getAllFlashcardSets();
+        console.log("fetchFlashcardSets___", data);
+        setFlashcardSets(data);
       } catch (err) {
-        toast.error(err.error)
+        toast.error(err.error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchFlashcardSets()
-  }, [])
+    fetchFlashcardSets();
+  }, []);
 
   const renderContent = () => {
     if (loading) {
-      return <Spinner/>
+      return <Spinner />;
     }
 
     if (flashcardSets.length === 0) {
       return (
-        <EmptyState title="No Flashcard Set found" description="You haven't generated any flashcards yet. Go to a document to create your first set." />
-      )
+        <EmptyState
+          title="No Flashcard Set found"
+          description="You haven't generated any flashcards yet. Go to a document to create your first set."
+        />
+      );
     }
 
     return (
@@ -46,14 +49,17 @@ const FlashcardsListPage = () => {
         </div>
       </div>
     );
-  }
+  };
 
   return (
     <div>
-      <PageHeader title="My Flashcard Sets" subtitle="An overview of your flashcard set across all documents" />
+      <PageHeader
+        title="My Flashcard Sets"
+        subtitle="An overview of your flashcard set across all documents"
+      />
       {renderContent()}
     </div>
-  )
-}
+  );
+};
 
-export default FlashcardsListPage
+export default FlashcardsListPage;

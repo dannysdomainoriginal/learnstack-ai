@@ -2,7 +2,7 @@ import React from "react";
 import { X } from "lucide-react";
 
 const Modal = ({ isOpen, closeModal, title, children }) => {
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">

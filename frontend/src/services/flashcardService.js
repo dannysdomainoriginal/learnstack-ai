@@ -13,7 +13,7 @@ export const getAllFlashcardSets = async () => {
 export const getSetsByDocument = async (documentId) => {
   try {
     const res = await api.get(
-      apiPaths.flashcards.getSetsByDocument(documentId)
+      apiPaths.flashcards.getSetsByDocument(documentId),
     );
     return res.data;
   } catch (error) {
@@ -38,7 +38,9 @@ export const reviewFlashcard = async (cardId, cardIndex) => {
     });
     return res.data;
   } catch (error) {
-    throw error.response?.data || { error: "Error marking flashcard as reviewed" };
+    throw (
+      error.response?.data || { error: "Error marking flashcard as reviewed" }
+    );
   }
 };
 

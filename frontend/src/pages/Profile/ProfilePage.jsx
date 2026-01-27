@@ -83,7 +83,10 @@ const ProfilePage = () => {
     setUpdating(true);
 
     try {
-      const { data, message } = await authService.updateProfile({ email, username });
+      const { data, message } = await authService.updateProfile({
+        email,
+        username,
+      });
 
       toast.success(message);
       updateUser(data);
@@ -116,7 +119,7 @@ const ProfilePage = () => {
           <form onSubmit={handleUpdateProfile} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                Full Name 
+                Full Name
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

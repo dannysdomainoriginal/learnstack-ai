@@ -130,7 +130,7 @@ export const getQuizResults = async (req, res) => {
   const quiz = await Quiz.findOne({
     _id: req.params.id,
     userId: req.user._id,
-  }).populate("documentId", "title")
+  }).populate("documentId", "title");
 
   if (!quiz) {
     return res.status(404).json({
@@ -149,7 +149,7 @@ export const getQuizResults = async (req, res) => {
   }
 
   const detailedResults = quiz.questions.map((q, index) => {
-    const userAnswer = quiz.userAnswers.find((a) => a.questionIndex === index)
+    const userAnswer = quiz.userAnswers.find((a) => a.questionIndex === index);
 
     return {
       questionIndex: index,
@@ -158,9 +158,9 @@ export const getQuizResults = async (req, res) => {
       correctAnswer: q.correctAnswer,
       selectedAnswer: userAnswer?.selectedAnswer || null,
       isCorrect: userAnswer?.isCorrect || false,
-      explanation: q.explanation
-    }
-  })
+      explanation: q.explanation,
+    };
+  });
 
   res.status(200).json({
     success: true,
@@ -173,7 +173,7 @@ export const getQuizResults = async (req, res) => {
         completedAt: quiz.completedAt,
         totalQuestions: quiz.questions.length,
       },
-      results: detailedResults
+      results: detailedResults,
     },
   });
 };
@@ -192,7 +192,7 @@ export const deleteQuiz = async (req, res) => {
     });
   }
 
-  await quiz.deleteOne()
+  await quiz.deleteOne();
 
   res.status(200).json({
     success: true,

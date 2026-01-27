@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 
 const AuthContext = createContext();
 
@@ -22,14 +28,14 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const token = localStorage.getItem("swe0k:learnstack:token");
       const userStr = localStorage.getItem("swe0k:learnstack:user");
 
       if (token && userStr) {
         const userData = JSON.parse(userStr);
         setUser(userData);
-        setIsAuthenticated(true)
+        setIsAuthenticated(true);
       }
     } catch (error) {
       console.error("Auth check failed", error);
@@ -74,7 +80,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateUser,
     checkAuthStatus,
-    isAdmin
+    isAdmin,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

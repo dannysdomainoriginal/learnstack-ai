@@ -14,13 +14,13 @@ const FlashcardHeader = ({ cardSet, backToSets }) => {
   const handleDeleteSet = async () => {
     if (!cardSet) return toast.error("CardSet is undefined");
     setDeleting(true);
-    
+
     try {
       const { message } = await flashcardService.deleteFlashcardSet(
         cardSet._id,
       );
       toast.success(message);
-      setIsDeleteModalOpen(false)
+      setIsDeleteModalOpen(false);
       backToSets();
     } catch (err) {
       toast.error(err.error);

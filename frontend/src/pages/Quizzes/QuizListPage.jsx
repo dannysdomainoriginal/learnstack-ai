@@ -11,7 +11,6 @@ import QuizCard from "../../components/quizzes/QuizCard";
 import PageHeader from "../../components/common/PageHeader";
 
 const QuizListPage = () => {
-
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
 

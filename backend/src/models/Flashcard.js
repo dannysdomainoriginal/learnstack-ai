@@ -4,7 +4,7 @@ const flashcardSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true
+      required: true,
     },
 
     userId: {
@@ -45,10 +45,10 @@ const flashcardSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 flashcardSchema.index({ userId: 1, documentId: 1 });
 
-const Flashcard = mongoose.model("Flashcard", flashcardSchema)
-export default Flashcard
+const Flashcard = mongoose.model("Flashcard", flashcardSchema);
+export default Flashcard;

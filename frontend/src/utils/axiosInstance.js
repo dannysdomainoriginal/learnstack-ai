@@ -18,7 +18,7 @@ api.interceptors.request.use(
     if (accessToken) {
       request.headers.Authorization = `Bearer ${accessToken}`;
     } else {
-      console.error("Access token is missing, please re-login")
+      console.error("Access token is missing, please re-login");
     }
 
     return request;
@@ -26,7 +26,7 @@ api.interceptors.request.use(
 
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response Interceptor
@@ -38,15 +38,15 @@ api.interceptors.response.use(
     error.response?.status === 500
       ? console.error("Internal Server error", error)
       : error.code === "ECONNABORTED"
-      ? console.error("Request timed out.")
-      : error.code === "ERR_NETWORK"
-      ? import.meta.env.DEV && alert("Server is offline")
-      : "";
+        ? console.error("Request timed out.")
+        : error.code === "ERR_NETWORK"
+          ? import.meta.env.DEV && alert("Server is offline")
+          : "";
 
     import.meta.env.DEV && console.error("Axios error:", error);
     console.log(error);
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

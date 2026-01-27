@@ -74,12 +74,12 @@ const DocumentListPage = () => {
       const { data, message } = await documentService.uploadDocument(formData);
       toast.success(message);
 
-      setDocuments((prev) => [data, ...prev])
+      setDocuments((prev) => [data, ...prev]);
       setIsUploadModalOpen(false);
       setUploadFile(null);
       setUploadTitle("");
 
-      fetchDocuments()
+      fetchDocuments();
     } catch (err) {
       toast.error(err.error);
     } finally {

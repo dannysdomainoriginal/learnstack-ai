@@ -16,7 +16,7 @@ export const register = async (req, res) => {
 
   const userExists = await User.findOne({
     // $or: [{ email }, { username }],
-    email
+    email,
   });
 
   if (userExists) {
@@ -112,7 +112,7 @@ export const login = async (req, res) => {
 // @route GET /api/auth/profile
 // @access Private
 export const getProfile = async (req, res) => {
-  const user = await User.findById(req.user._id)
+  const user = await User.findById(req.user._id);
 
   res.status(200).json({
     success: true,
@@ -132,15 +132,15 @@ export const getProfile = async (req, res) => {
 // @route PUT /api/auth/profile
 // @access Private
 export const updateProfile = async (req, res) => {
-  const { username, email, profileImage } = req.body
+  const { username, email, profileImage } = req.body;
 
-  const user = await User.findById(req.user._id)
+  const user = await User.findById(req.user._id);
 
-  if (username?.trim()) user.username = username?.trim()
-  if (email?.trim()) user.email = email?.trim()
-  if (profileImage) user.profileImage = profileImage
+  if (username?.trim()) user.username = username?.trim();
+  if (email?.trim()) user.email = email?.trim();
+  if (profileImage) user.profileImage = profileImage;
 
-  await user.save()
+  await user.save();
 
   res.status(200).json({
     success: true,
@@ -161,32 +161,32 @@ export const updateProfile = async (req, res) => {
 // @route POST /api/auth/change-password
 // @access Private
 export const changePassword = async (req, res) => {
-  const { currentPassword, newPassword } = req.body
+  const { currentPassword, newPassword } = req.body;
 
-  if (!currentPassword, !newPassword) {
+  if ((!currentPassword, !newPassword)) {
     return res.status(400).json({
       success: false,
       error: "Please provide current and new password",
-      status: 400
-    })
+      status: 400,
+    });
   }
 
-  const user = await User.findById(req.user._id).select("+password")
+  const user = await User.findById(req.user._id).select("+password");
 
-  const isMatch = await user.matchPassword(currentPassword)
+  const isMatch = await user.matchPassword(currentPassword);
   if (!isMatch) {
     return res.status(401).json({
       success: false,
       error: "Password is incorrect",
-      status: 401
-    })
+      status: 401,
+    });
   }
 
-  user.password = newPassword
-  await user.save()
+  user.password = newPassword;
+  await user.save();
 
   res.status(200).json({
     success: true,
-    message: "Password change was successful"
-  })
+    message: "Password change was successful",
+  });
 };

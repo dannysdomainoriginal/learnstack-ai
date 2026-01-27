@@ -35,7 +35,7 @@ export const getDashboard = async (req, res) => {
   const averageScore =
     quizzes.length > 0
       ? Math.round(
-          quizzes.reduce((sum, q) => sum + q.score, 0) / quizzes.length
+          quizzes.reduce((sum, q) => sum + q.score, 0) / quizzes.length,
         )
       : 0;
 
@@ -49,10 +49,10 @@ export const getDashboard = async (req, res) => {
     .sort({ updatedAt: -1 })
     .limit(5)
     .populate("documentId", "title")
-    .select("title score totalQuestions createdAt completedAt")
-  
+    .select("title score totalQuestions createdAt completedAt");
+
   // Study streak - Mock data
-  const studyStreak = Math.floor(Math.random() * 7) + 1 // todo
+  const studyStreak = Math.floor(Math.random() * 7) + 1; // todo
 
   res.status(200).json({
     success: true,

@@ -1,12 +1,12 @@
 import React from "react";
 import PageHeader from "../../components/common/PageHeader";
 
-const AdminPage = () => {
+const LibraryPage = () => {
   return (
     <div className="">
       <PageHeader
-        title="Admin Dashboard"
-        subtitle="Monitor app usage, users, and system growth in one place"
+        title="Our Library"
+        subtitle="Public resources made by students just like you"
       />
 
       {/* Page Content */}
@@ -14,4 +14,4 @@ const AdminPage = () => {
   );
 };
 
-export default AdminPage;
+export default LibraryPage;

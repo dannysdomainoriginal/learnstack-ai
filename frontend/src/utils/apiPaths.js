@@ -47,4 +47,12 @@ export const apiPaths = {
   progress: {
     getDashboardData: "/api/progress/dashboard",
   },
+
+  admin: {
+    getDashboard: "/api/admin",
+    getAnalytics: "/api/admin/db-analytics",
+    getDocuments: "/api/admin/documents",
+    getQuizzes: "/api/admin/quizzes",
+    getFlashcards: "/api/admin/flashcards",
+  }
 };

@@ -1,13 +1,6 @@
 import mongoose from "mongoose";
 
-// userId
-// type: ["flashcard", "quiz", "explanation", "summary", "chat"]
-// tokensUsed
-// model
-// link to data ( based on type )
-// timestamps: true
-
-const documentSchema = new mongoose.Schema(
+const aiFileSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,75 +8,36 @@ const documentSchema = new mongoose.Schema(
       required: true,
     },
 
-    title: {
+    type: {
       type: String,
-      required: [true, "Please provide a document title"],
-      trim: true,
-    },
-
-    fileName: {
-      type: String,
+      enum: ["flashcard", "quiz", "explanation", "summary", "chat"],
       required: true,
     },
 
-    url: {
-      type: String,
+    model: {
+      type: String, // e.g. "gpt-4o-mini"
       required: true,
     },
 
-    r2Key: {
-      type: String,
-      required: true,
-    },
-
-    fileSize: {
+    tokensUsed: {
       type: Number,
       required: true,
+      min: 0,
     },
 
-    extractedText: {
+    link: {
       type: String,
-      default: "",
-    },
-
-    chunks: [
-      {
-        content: {
-          type: String,
-          required: true,
-        },
-        pageNumber: {
-          type: Number,
-          default: 0,
-        },
-        chunkIndex: {
-          type: Number,
-          required: true,
-        },
-      },
-    ],
-
-    uploadDate: {
-      type: Date,
-      default: Date.now,
-    },
-
-    lastAccessed: {
-      type: Date,
-    },
-
-    status: {
-      type: String,
-      enum: ["processing", "ready", "failed"],
-      default: "processing",
-    },
+      required: true
+    }
   },
   {
     timestamps: true,
   },
 );
 
-documentSchema.index({ userId: 1, uploadDate: -1 });
+aiFileSchema.index({ userId: 1, createdAt: -1 });
+aiFileSchema.index({ type: 1 });
+aiFileSchema.index({ tokensUsed: 1, model: 1 });
 
-const Document = mongoose.model("Document", documentSchema);
-export default Document;
+const AiFiles = mongoose.model("AI-File", aiFileSchema);
+export default AiFiles;

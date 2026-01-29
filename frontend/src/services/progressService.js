@@ -1,4 +1,4 @@
-import api from "../utils/axiosInstance";
+import api from "../libraries/axiosInstance";
 import { apiPaths } from "../utils/apiPaths";
 
 export const getDashboardData = async () => {

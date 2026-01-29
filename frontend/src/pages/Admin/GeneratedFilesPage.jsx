@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { BrainCircuit } from "lucide-react";
 import Spinner from "../../components/common/Spinner";
 import toast from "react-hot-toast";
-import api from "../../utils/axiosInstance";
+import api from "../../libraries/axiosInstance";
 
 // TODOLIST
 // 1) Add a number view

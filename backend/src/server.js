@@ -34,6 +34,8 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.set("trust proxy", 1);
+
 // Static folder for uploads
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/generated", express.static(path.join(process.cwd(), "generated")));
@@ -54,6 +56,19 @@ app.use("/api/flashcards", flashcardRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/progress", progressRoutes);
+
+// Frontend routing
+if (process.env.NODE_ENV === "production") {
+  const frontendDir = join(__dirname, "..", "..", "frontend", "dist");
+
+  app.use(express.static(frontendDir));
+
+  // send index.html
+  app.use((req, res, next) => {
+    const apiNotFound = !req.path.includes("/api");
+    return apiNotFound ? res.sendFile(join(frontendDir, "index.html")) : next();
+  });
+}
 
 app.use(errorHandler);
 

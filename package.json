@@ -1,0 +1,12 @@
+{
+  "name": "learnstack-ai",
+  "version": "1.0.0",
+  "description": "25th January, 2026",
+  "license": "MIT",
+  "author": "Charles Daniel",
+  "scripts": {
+    "install": "npm install --prefix frontend && npm install --prefix backend",
+    "build": "npm run build --prefix frontend",
+    "start": "cd backend && npm start"
+  }
+}

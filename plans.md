@@ -1,0 +1,5 @@
+- [ ] Convert js to Typescript
+- [ ] Build frontend optimized for mobile screens
+- [ ] Use React Query and work on optimistic updates
+- [ ] Make sure to use our usual MERNstack utilities, reference Axiom repo for dependencies to install
+- [ ] Install everything from scratch, react-ts-vite and nodejs-tsx

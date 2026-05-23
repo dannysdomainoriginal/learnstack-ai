@@ -43,7 +43,6 @@ app.use("/generated", express.static(path.join(process.cwd(), "generated")));
 app.use(
   formData.parse({
     uploadDir: os.tmpdir(),
-    autoClean: true,
   }),
   formData.format(),
 );
@@ -59,14 +58,16 @@ app.use("/api/progress", progressRoutes);
 
 // Frontend routing
 if (process.env.NODE_ENV === "production") {
-  const frontendDir = join(__dirname, "..", "..", "frontend", "dist");
+  const frontendDir = path.join(__dirname, "..", "..", "frontend", "dist");
 
   app.use(express.static(frontendDir));
 
   // send index.html
   app.use((req, res, next) => {
     const apiNotFound = !req.path.includes("/api");
-    return apiNotFound ? res.sendFile(join(frontendDir, "index.html")) : next();
+    return apiNotFound
+      ? res.sendFile(path.join(frontendDir, "index.html"))
+      : next();
   });
 }
 

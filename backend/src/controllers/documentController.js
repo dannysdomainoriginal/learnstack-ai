@@ -5,6 +5,7 @@ import { extractTextFromPDF } from "../utils/pdfParser.js";
 import { chunkText } from "../utils/textChunker.js";
 import mongoose from "mongoose";
 import { uploadFile, deleteFile } from "../libraries/r2.js";
+import { pdfQueue } from "../libraries/worker.js";
 
 export const uploadDocument = async (req, res, next) => {
   let uploadedFile;
@@ -49,12 +50,29 @@ export const uploadDocument = async (req, res, next) => {
       status: "processing",
     });
 
-    // Fire-and-forget PDF processing
-    processPDF(document._id, file.path).catch(async (err) => {
-      console.error(err);
+    try {
+      // * Instead of locking the CPU, we push a minimal pointer payload into Redis
+      await pdfQueue.add(
+        `process-${documentId}`,
+        {
+          documentId,
+          filePath,
+        },
+        { attempts: 3, backoff: 5000 },
+      );
+
+      // We immediately update the status to processing so the UI knows it's queued up
+      await Document.findByIdAndUpdate(documentId, { status: "processing" });
+
+      console.log(
+        `Document ${documentId} successfully offloaded to background worker queue.`,
+      );
+    } catch (err) {
+      console.error(`Error queuing document ${documentId}:`, err);
       await document.deleteOne();
       await deleteFile(uploadedFile.key);
-    });
+      throw err;
+    }
 
     res.status(201).json({
       success: true,
@@ -67,27 +85,6 @@ export const uploadDocument = async (req, res, next) => {
     next(err);
   }
 };
-
-// processPDF service (unchanged signature, uses tmp file path)
-async function processPDF(documentId, filePath) {
-  try {
-    const { text } = await extractTextFromPDF(filePath);
-
-    const chunks = chunkText(text, 500, 50);
-
-    await Document.findByIdAndUpdate(documentId, {
-      extractedText: text,
-      chunks,
-      status: "ready",
-    });
-
-    console.log(`Document ${documentId} processed successfully`);
-  } catch (err) {
-    console.error(`Error processing document ${documentId}:`, err);
-    await Document.findByIdAndUpdate(documentId, { status: "failed" });
-    throw err;
-  }
-}
 
 export const getDocuments = async (req, res) => {
   const documents = await Document.aggregate([

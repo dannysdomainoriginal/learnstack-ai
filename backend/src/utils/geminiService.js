@@ -27,10 +27,6 @@ export const generateFlashcards = async (text, count = 10) => {
     });
 
     const generatedText = response.text;
-    await fs.writeFile(
-      `./generated/${Date.now()}-newFlashcardGen-${crypto.randomUUID()}.txt`,
-      generatedText,
-    );
 
     // Parse the response
     const flashcards = [];
@@ -91,10 +87,6 @@ export const generateQuiz = async (text, numQuestions = 5) => {
     });
 
     const generatedText = response.text;
-    await fs.writeFile(
-      `./generated/${Date.now()}-newQuizGen-${crypto.randomUUID()}.txt`,
-      generatedText,
-    );
 
     const questions = [];
     const questionBlocks = generatedText.split("---").filter((q) => q.trim());
@@ -156,10 +148,6 @@ export const generateSummary = async (text) => {
       contents: prompt,
     });
 
-    await fs.writeFile(
-      `./generated/${Date.now()}-newFlashcardGen-${crypto.randomUUID()}.txt`,
-      response.text,
-    );
 
     return response.text;
   } catch (err) {
@@ -189,10 +177,6 @@ export const chatWithContext = async (question, chunks) => {
       contents: prompt,
     });
 
-    await fs.writeFile(
-      `./generated/${Date.now()}-newGeneratedChat-${crypto.randomUUID()}.txt`,
-      response.text,
-    );
     return response.text;
   } catch (err) {
     handleGeminiError(err);
@@ -214,10 +198,6 @@ export const explainConcept = async (concept, context) => {
       contents: prompt,
     });
 
-    await fs.writeFile(
-      `./generated/${Date.now()}-newExplainConcept-${crypto.randomUUID()}.txt`,
-      response.text,
-    );
     return response.text;
   } catch (err) {
     handleGeminiError(err);

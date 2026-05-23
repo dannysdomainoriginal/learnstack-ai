@@ -1,5 +1,5 @@
 import { Worker, Queue } from "bullmq";
-import Document from "../models/Document";
+import Document from "../models/Document.js";
 import { extractTextFromPDF } from "../utils/pdfParser.js";
 import { chunkText } from "../utils/textChunker.js";
 import fs from "fs/promises"

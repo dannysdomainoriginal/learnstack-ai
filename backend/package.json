@@ -8,7 +8,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --env-file=.env src/server.js",
+    "start": "node -r dotenv/config src/server.js",
     "dev": "nodemon --env-file=.env src/server.js"
   },
   "dependencies": {

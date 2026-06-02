@@ -2,21 +2,12 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import path from "path";
-import os from "os";
 import morgan from "morgan";
 import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 import errorHandler from "./middleware/errorHandler.js";
-import formData from "express-form-data";
 import parser from "cookie-parser";
-
-import adminRoutes from "./routes/adminRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
-import documentRoutes from "./routes/documentRoutes.js";
-import flashcardRoutes from "./routes/flashcardRoutes.js";
-import aiRoutes from "./routes/aiRoutes.js";
-import quizRoutes from "./routes/quizRoutes.js";
-import progressRoutes from "./routes/progressRoutes.js";
+import routes from "./routes/index.js";
 
 // ES6 module __dirname alternative
 const __filename = fileURLToPath(import.meta.url);
@@ -43,22 +34,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use("/generated", express.static(path.join(process.cwd(), "generated")));
-
-app.use(
-  formData.parse({
-    uploadDir: os.tmpdir(),
-  }),
-  formData.format(),
-);
-
-// Routes
-app.use("/api/admin", adminRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/documents", documentRoutes);
-app.use("/api/flashcards", flashcardRoutes);
-app.use("/api/ai", aiRoutes);
-app.use("/api/quizzes", quizRoutes);
-app.use("/api/progress", progressRoutes);
+app.use("/api", routes);
 
 // Frontend routing
 if (process.env.NODE_ENV === "production") {
@@ -78,7 +54,7 @@ if (process.env.NODE_ENV === "production") {
 app.use(errorHandler);
 
 // 404 handler
-app.use((req, res) => {
+app.use((req, res, next) => {
   res.status(404).json({
     success: false,
     status: 404,
@@ -95,4 +71,15 @@ app.listen(PORT, () => {
 process.on("unhandledRejection", (err) => {
   console.log(`Error: ${err.message}`);
   process.exit(1);
+});
+
+server.on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.error(
+      `❌ Port ${PORT} is already in use. Please kill the process or use a different port!`,
+    );
+    process.exit(1);
+  } else {
+    console.error("Server error:", err);
+  }
 });

@@ -1,10 +1,10 @@
 import Document from "../models/Document.js";
 import Quiz from "../models/Quiz.js";
 import Flashcard from "../models/Flashcard.js";
+import Upload from "../models/Upload.js";
 import { extractTextFromPDF } from "../utils/pdfParser.js";
 import { chunkText } from "../utils/textChunker.js";
 import mongoose from "mongoose";
-import { uploadFile, deleteFile } from "../libraries/r2.js";
 import { pdfQueue } from "../libraries/worker.js";
 
 export const uploadDocument = async (req, res, next) => {
@@ -28,15 +28,18 @@ export const uploadDocument = async (req, res, next) => {
       });
     }
 
+    const folder = "documents";
+    let key = `${folder}/${Date.now()}-${crypto.randomUUID()}-${file.name}`;
+    key = key.replaceAll(" ", "-");
+
     // Upload to Cloudflare R2
-    uploadedFile = await uploadFile({
-      filePath: file.path,
-      fileName: file.name,
-      contentType: file.type,
-    }).catch((err) => {
-      throw new Error(
-        "Error uploading your document to our cloud storage.\nPlease try again.",
-      );
+    uploadedFile = await Upload.uploadFile({
+      path: file.path,
+      key,
+      mimetype: file.type,
+      size: file.size,
+      useCase: "document",
+      user: req.user._id,
     });
 
     // Create document in DB
@@ -45,10 +48,12 @@ export const uploadDocument = async (req, res, next) => {
       title,
       fileName: file.name,
       url: uploadedFile.url, // public URL
-      r2Key: uploadedFile.key, // R2 key
+      r2Key: key, // R2 key
       fileSize: file.size,
       status: "processing",
     });
+
+    const documentId = document._id;
 
     try {
       // * Instead of locking the CPU, we push a minimal pointer payload into Redis
@@ -56,7 +61,7 @@ export const uploadDocument = async (req, res, next) => {
         `process-${documentId}`,
         {
           documentId,
-          filePath,
+          filePath: file.path,
         },
         { attempts: 3, backoff: 5000 },
       );
@@ -70,7 +75,7 @@ export const uploadDocument = async (req, res, next) => {
     } catch (err) {
       console.error(`Error queuing document ${documentId}:`, err);
       await document.deleteOne();
-      await deleteFile(uploadedFile.key);
+      await Upload.deleteFile(uploadedFile.key);
       throw err;
     }
 
@@ -81,7 +86,7 @@ export const uploadDocument = async (req, res, next) => {
     });
   } catch (err) {
     // Clean up file from R2 if uploaded
-    if (uploadedFile) await deleteFile(uploadedFile.key);
+    if (uploadedFile) await Upload.deleteFile(uploadedFile.key);
     next(err);
   }
 };
@@ -164,7 +169,7 @@ export const deleteDocument = async (req, res) => {
   }
 
   // Delete file from Cloudflare R2
-  const success = await deleteFile(document.r2Key);
+  const success = await Upload.deleteFile(document.r2Key);
 
   if (!success) {
     return res.status(500).json({

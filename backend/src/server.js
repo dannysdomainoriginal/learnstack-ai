@@ -37,7 +37,10 @@ app.use(express.urlencoded({ extended: true }));
 app.set("trust proxy", 1);
 
 // Static folder for uploads
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+if (process.env.NODE_ENV === "development") {
+  app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+}
+
 app.use("/generated", express.static(path.join(process.cwd(), "generated")));
 
 app.use(

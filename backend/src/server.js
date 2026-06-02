@@ -73,7 +73,7 @@ process.on("unhandledRejection", (err) => {
   process.exit(1);
 });
 
-server.on("error", (err) => {
+app.on("error", (err) => {
   if (err.code === "EADDRINUSE") {
     console.error(
       `❌ Port ${PORT} is already in use. Please kill the process or use a different port!`,

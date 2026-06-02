@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
+import { authService } from "../services";
 
 const AuthContext = createContext();
 
@@ -13,7 +14,6 @@ export const useAuth = () => {
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
-
   return context;
 };
 
@@ -26,46 +26,49 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, []);
 
+  // 2. Updated to use your clean service wrapper
   const checkAuthStatus = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("swe0k:learnstack:token");
-      const userStr = localStorage.getItem("swe0k:learnstack:user");
-
-      if (token && userStr) {
-        const userData = JSON.parse(userStr);
-        setUser(userData);
+      const { data, success } = await authService.getProfile();
+      if (success && data) {
+        setUser(data);
         setIsAuthenticated(true);
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
       }
     } catch (error) {
-      console.error("Auth check failed", error);
-      logout();
+      console.error("Auth check failed:", error);
+      setUser(null);
+      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }
   };
 
-  const login = (userData, token) => {
-    localStorage.setItem("swe0k:learnstack:token", token);
-    localStorage.setItem("swe0k:learnstack:user", JSON.stringify(userData));
-
+  const login = (userData) => {
     setUser(userData);
     setIsAuthenticated(true);
   };
 
-  const logout = () => {
-    localStorage.removeItem("swe0k:learnstack:token");
-    localStorage.removeItem("swe0k:learnstack:user");
-
-    setUser(null);
-    setIsAuthenticated(false);
+  // 3. Keep it consistent by using a service helper for logout if you have one
+  const logout = async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    } finally {
+      setUser(null);
+      setIsAuthenticated(false);
+    }
   };
 
   const updateUser = (updates) => {
-    const profile = { ...user, ...updates };
-
-    localStorage.setItem("swe0k:learnstack:user", JSON.stringify(profile));
-    setUser(profile);
+    setUser((prevUser) => {
+      if (!prevUser) return null;
+      return { ...prevUser, ...updates };
+    });
   };
 
   const isAdmin = useMemo(() => {

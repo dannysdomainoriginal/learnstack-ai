@@ -8,16 +8,25 @@ const generateToken = (id) => {
   });
 };
 
+// Helper function to handle cookie configurations consistently
+const sendTokenCookie = (res, token) => {
+  const cookieOptions = {
+    httpOnly: true, // Prevents client-side JS from reading the cookie (protects against XSS)
+    secure: process.env.NODE_ENV === "production", // true means HTTPS only
+    sameSite: "strict", // Protects against CSRF attacks
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds (matches JWT)
+  };
+
+  res.cookie("token", token, cookieOptions);
+};
+
 // @desc Register new user
 // @route POST /api/auth/register
 // @access Public
 export const register = async (req, res) => {
   const { username, email, password } = req.body;
 
-  const userExists = await User.findOne({
-    // $or: [{ email }, { username }],
-    email,
-  });
+  const userExists = await User.findOne({ email });
 
   if (userExists) {
     return res.status(400).json({
@@ -38,6 +47,9 @@ export const register = async (req, res) => {
 
   const token = generateToken(user._id);
 
+  // Set the httpOnly cookie
+  sendTokenCookie(res, token);
+
   res.status(201).json({
     success: true,
     data: {
@@ -49,9 +61,8 @@ export const register = async (req, res) => {
         profileImage: user.profileImage,
         createdAt: user.createdAt,
       },
-      token,
     },
-    message: `${user.username} has successfully logged in`,
+    message: `${user.username} has successfully registered and logged in`,
   });
 };
 
@@ -91,6 +102,9 @@ export const login = async (req, res) => {
 
   const token = generateToken(user._id);
 
+  // Set the httpOnly cookie
+  sendTokenCookie(res, token);
+
   res.status(200).json({
     success: true,
     data: {
@@ -102,9 +116,23 @@ export const login = async (req, res) => {
         profileImage: user.profileImage,
         createdAt: user.createdAt,
       },
-      token,
     },
     message: `Welcome back, ${user.username}!`,
+  });
+};
+
+// @desc Logout user / Clear Cookie
+// @route POST /api/auth/logout
+// @access Public
+export const logout = async (req, res) => {
+  res.cookie("token", "none", {
+    httpOnly: true,
+    expires: new Date(0), // Instantly expires the cookie
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
   });
 };
 
@@ -163,7 +191,7 @@ export const updateProfile = async (req, res) => {
 export const changePassword = async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
-  if ((!currentPassword, !newPassword)) {
+  if (!currentPassword || !newPassword) {
     return res.status(400).json({
       success: false,
       error: "Please provide current and new password",

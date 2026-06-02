@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 import errorHandler from "./middleware/errorHandler.js";
 import formData from "express-form-data";
+import parser from "cookie-parser";
 
 import adminRoutes from "./routes/adminRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -30,10 +31,10 @@ app.use(
     credentials: true,
   }),
 );
+app.use(parser());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.set("trust proxy", 1);
 
 // Static folder for uploads

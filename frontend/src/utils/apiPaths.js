@@ -7,6 +7,7 @@ export const apiPaths = {
     getProfile: "/api/auth/profile",
     updateProfile: "/api/auth/profile",
     changePassword: "/api/auth/change-password",
+    logout: "/api/auth/logout"
   },
 
   documents: {

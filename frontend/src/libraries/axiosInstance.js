@@ -8,26 +8,8 @@ const api = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
+  withCredentials: true,
 });
-
-// Request Interceptor
-api.interceptors.request.use(
-  (request) => {
-    const accessToken = localStorage.getItem("swe0k:learnstack:token");
-
-    if (accessToken) {
-      request.headers.Authorization = `Bearer ${accessToken}`;
-    } else {
-      console.error("Access token is missing, please re-login");
-    }
-
-    return request;
-  },
-
-  (error) => {
-    return Promise.reject(error);
-  },
-);
 
 // Response Interceptor
 api.interceptors.response.use(

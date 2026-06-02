@@ -51,3 +51,12 @@ export const changePassword = async (passwords) => {
     throw error.response?.data || { error: "Error updating your password" };
   }
 };
+
+export const logoutUser = async () => {
+  try {
+    const res = await api.post(apiPaths.auth.logout);
+    return res.data;
+  } catch (error) {
+    throw error.response?.data || { error: "Error logging out" };
+  }
+};

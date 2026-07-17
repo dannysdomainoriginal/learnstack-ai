@@ -4,7 +4,6 @@ import Quiz from "../models/Quiz.js";
 import User from "../models/User.js";
 import AiFiles from "../models/AiFiles.js";
 import Upload from "../models/Upload.js";
-import { deleteFile } from "../libraries/r2.js";
 
 /* -------------------------------------------------------------------------- */
 /*                                  HELPERS                                   */
@@ -307,7 +306,7 @@ export const deleteDocument = async (req, res) => {
     });
   }
 
-  const deleted = await deleteFile(document.r2Key);
+  const deleted = await Upload.deleteFile(document.r2Key);
 
   if (!deleted) {
     return res.status(500).json({

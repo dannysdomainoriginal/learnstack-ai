@@ -87,7 +87,7 @@ uploadSchema.statics.uploadFile = async function ({
         }),
       );
 
-      url = `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${key}`;
+      url = `${process.env.R2_PUBLIC_URL}/${key}`;
     } else {
       url = await uploadToDisk({
         key,

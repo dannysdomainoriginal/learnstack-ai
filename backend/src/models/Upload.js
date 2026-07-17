@@ -2,7 +2,7 @@ import "dotenv/config";
 import fs from "fs";
 import httpError from "http-errors";
 import { Schema, model, Types, Document, Model } from "mongoose";
-import { r2 } from "../libraries/r2.js";
+import { deleteFile, r2 } from "../libraries/r2.js";
 import { join } from "path";
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { uploadToDisk } from "../utils/uploadToDisk.js";
@@ -50,7 +50,7 @@ uploadSchema.methods.deleteFile = async function () {
     if (this.url.includes("https")) {
       await r2.send(
         new DeleteObjectCommand({
-          Bucket: process.env.CLOUDFLARE_R2_BUCKET,
+          Bucket: process.env.R2_BUCKET,
           Key: this.key,
         }),
       );
@@ -80,7 +80,7 @@ uploadSchema.statics.uploadFile = async function ({
     if (process.env.NODE_ENV === "production") {
       await r2.send(
         new PutObjectCommand({
-          Bucket: process.env.CLOUDFLARE_R2_BUCKET,
+          Bucket: process.env.R2_BUCKET,
           Key: key,
           Body: path ? fs.createReadStream(path) : buffer,
           ContentType: mimetype,

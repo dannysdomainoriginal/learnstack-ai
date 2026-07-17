@@ -2,7 +2,7 @@ import "dotenv/config";
 import fs from "fs";
 import httpError from "http-errors";
 import { Schema, model, Types, Document, Model } from "mongoose";
-import { deleteFile, r2 } from "../libraries/r2.js";
+import { r2 } from "../libraries/r2.js";
 import { join } from "path";
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { uploadToDisk } from "../utils/uploadToDisk.js";

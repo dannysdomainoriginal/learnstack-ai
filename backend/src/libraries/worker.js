@@ -1,8 +1,9 @@
+import "dotenv/config";
 import { Worker, Queue } from "bullmq";
 import Document from "../models/Document.js";
 import { extractTextFromPDF } from "../utils/pdfParser.js";
 import { chunkText } from "../utils/textChunker.js";
-import fs from "fs/promises"
+import fs from "fs/promises";
 
 // This worker processes jobs coming out of the 'pdf-processing' queue
 const pdfWorker = new Worker(
@@ -35,7 +36,7 @@ const pdfWorker = new Worker(
       await fs.unlink(filePath);
     } catch (err) {
       if (err.code !== "ENOENT") {
-        console.log(`Failed to delete file:`, err)
+        console.log(`Failed to delete file:`, err);
       }
     }
   },

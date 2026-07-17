@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { GoogleGenAI } from "@google/genai";
 import fs from "fs/promises";
 
@@ -147,7 +148,6 @@ export const generateSummary = async (text) => {
       model: "gemini-2.5-flash-lite",
       contents: prompt,
     });
-
 
     return response.text;
   } catch (err) {

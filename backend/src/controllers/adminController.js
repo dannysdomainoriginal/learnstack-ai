@@ -3,6 +3,7 @@ import Flashcard from "../models/Flashcard.js";
 import Quiz from "../models/Quiz.js";
 import User from "../models/User.js";
 import AiFiles from "../models/AiFiles.js";
+import Upload from "../models/Upload.js";
 import { deleteFile, getR2UsageStats } from "../libraries/r2.js";
 
 /* -------------------------------------------------------------------------- */
@@ -25,170 +26,173 @@ const paginate = (req) => {
 };
 
 /* -------------------------------------------------------------------------- */
-/*                           OLD DASHBOARD IN PLACE                           */
+/*                               GET DASHBOARD                                */
 /* -------------------------------------------------------------------------- */
 export const getDashboard = async (req, res) => {
-  res.status(201).json({
-    success: false,
-    message: `Welcome ${req.user.username}!`,
-    data: {
-      stats: {
-        users: {
-          total: 128,
-          latest: "Tue 27 Jan, 2026",
-          active: 42,
-        },
-        documents: {
-          total: 10,
-          latest: "Tue 27 Jan, 2026",
-          users: 15,
-        },
-        quizzes: {
-          total: 20,
-          latest: "Tue 27 Jan, 2026",
-          users: 8,
-        },
-        flashcards: {
-          total: 30,
-          latest: "Tue 27 Jan, 2026",
-          users: 9,
-        },
-        aiFiles: {
-          total: 10,
-          latest: "Tue 27 Jan, 2026",
-          tokensUsed: 5320,
-        },
-        uploads: {
-          total: 10, // todo get from cloudfare
-          latest: "Tue 27 Jan, 2026",
-          storageUsed: 12.4 + "GB",
+  try {
+    // 1. Get admin IDs to exclude internal activity
+    const admins = await User.find({ roles: "admin" }).select("_id");
+    const adminIds = admins.map((a) => a._id);
+
+    const baseMatch = {
+      userId: { $nin: adminIds },
+    };
+
+    // 2. Shared aggregation pipeline builder
+    const statsPipeline = (extraGroup = {}) => [
+      { $match: baseMatch },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          latest: { $max: "$updatedAt" },
+          users: { $addToSet: "$userId" },
+          ...extraGroup,
         },
       },
-      analytics: {},
-    },
-  });
-};
-
-/* -------------------------------------------------------------------------- */
-/*                          GET DASHBOARDS STATISTICS                         */
-/* -------------------------------------------------------------------------- */
-export const getDashboardStatistics = async (req, res) => {
-  // 1. Get admin IDs (exclude internal activity)
-  const admins = await User.find({ roles: "admin" }).select("_id");
-  const adminIds = admins.map((a) => a._id);
-
-  const baseMatch = {
-    userId: { $nin: adminIds },
-  };
-
-  // 2. Shared aggregation builder
-  const statsPipeline = (extraGroup = {}) => [
-    { $match: baseMatch },
-    {
-      $group: {
-        _id: null,
-        total: { $sum: 1 },
-        latest: { $max: "$updatedAt" },
-        users: { $addToSet: "$userId" },
-        ...extraGroup,
+      {
+        $project: {
+          _id: 0,
+          total: 1,
+          latest: 1,
+          users: { $size: "$users" },
+          ...Object.keys(extraGroup).reduce((acc, k) => {
+            acc[k] = 1;
+            return acc;
+          }, {}),
+        },
       },
-    },
-    {
-      $project: {
-        _id: 0,
-        total: 1,
-        latest: 1,
-        users: { $size: "$users" },
-        ...Object.keys(extraGroup).reduce((acc, k) => {
-          acc[k] = 1;
-          return acc;
-        }, {}),
+    ];
+
+    // 3. Run all aggregations in parallel (including local Upload collection)
+    const [
+      usersTotal,
+      documentsAgg,
+      flashcardsAgg,
+      quizzesAgg,
+      aiFilesAgg,
+      uploadsAgg,
+    ] = await Promise.all([
+      // Users Count
+      User.countDocuments({ _id: { $nin: adminIds } }),
+
+      // Documents Stats
+      Document.aggregate(statsPipeline()),
+
+      // Flashcards Stats
+      Flashcard.aggregate(statsPipeline()),
+
+      // Quizzes Stats
+      Quiz.aggregate(statsPipeline()),
+
+      // AI Files Stats
+      AiFiles.aggregate(
+        statsPipeline({
+          tokensUsed: { $sum: "$tokensUsed" },
+        }),
+      ),
+
+      // Upload model DB aggregation (excl. Admin uploads)
+      Upload.aggregate([
+        { $match: { uploaderId: { $nin: adminIds } } },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: 1 },
+            latest: { $max: "$uploadedAt" },
+            totalSize: { $sum: "$size" }, // Accumulates size key in bytes
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            total: 1,
+            latest: 1,
+            totalSize: 1,
+          },
+        },
+      ]),
+    ]);
+
+    // 4. Helper to normalize empty query responses
+    const normalize = (agg) => agg[0] || { total: 0, latest: null, users: 0 };
+
+    const documents = normalize(documentsAgg);
+    const flashcards = normalize(flashcardsAgg);
+    const quizzes = normalize(quizzesAgg);
+
+    const aiFiles = aiFilesAgg[0] || {
+      total: 0,
+      latest: null,
+      users: 0,
+      tokensUsed: 0,
+    };
+
+    const uploads = uploadsAgg[0] || {
+      total: 0,
+      latest: null,
+      totalSize: 0,
+    };
+
+    // Helper to format date strings cleanly
+    const formatDate = (date) => {
+      if (!date) return "N/A";
+      return new Date(date).toLocaleDateString("en-US", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+    };
+
+    // 5. Build dynamic statistics payload match to the old nesting pattern
+    res.status(200).json({
+      success: true,
+      message: `Welcome ${req.user.username}!`,
+      data: {
+        stats: {
+          users: {
+            total: usersTotal,
+            latest: "N/A", // Handled if user registration tracking is added
+            active: usersTotal, // Placeholder or active session data if tracked
+          },
+          documents: {
+            total: documents.total,
+            latest: formatDate(documents.latest),
+            users: documents.users,
+          },
+          quizzes: {
+            total: quizzes.total,
+            latest: formatDate(quizzes.latest),
+            users: quizzes.users,
+          },
+          flashcards: {
+            total: flashcards.total,
+            latest: formatDate(flashcards.latest),
+            users: flashcards.users,
+          },
+          aiFiles: {
+            total: aiFiles.total,
+            latest: formatDate(aiFiles.latest),
+            tokensUsed: aiFiles.tokensUsed,
+          },
+          uploads: {
+            total: uploads.total,
+            latest: formatDate(uploads.latest),
+            storageUsed: `${(uploads.totalSize / 1024 ** 3).toFixed(2)} GB`,
+          },
+        },
+        analytics: {}, // Left empty as per the original schema
       },
-    },
-  ];
-
-  // 3. Run everything in parallel
-  const [
-    usersTotal,
-    documentsAgg,
-    flashcardsAgg,
-    quizzesAgg,
-    aiFilesAgg,
-    r2Stats,
-  ] = await Promise.all([
-    User.countDocuments({ _id: { $nin: adminIds } }),
-
-    Document.aggregate(statsPipeline()),
-
-    Flashcard.aggregate(statsPipeline()),
-
-    Quiz.aggregate(statsPipeline()),
-
-    AiFiles.aggregate(
-      statsPipeline({
-        tokensUsed: { $sum: "$tokensUsed" },
-      }),
-    ),
-
-    getR2UsageStats(), // authoritative Cloudflare data
-  ]);
-
-  // 4. Normalize empty aggregates
-  const normalize = (agg) => agg[0] || { total: 0, latest: null, users: 0 };
-
-  const documents = normalize(documentsAgg);
-  const flashcards = normalize(flashcardsAgg);
-  const quizzes = normalize(quizzesAgg);
-  const aiFiles = aiFilesAgg[0] || {
-    total: 0,
-    latest: null,
-    users: 0,
-    tokensUsed: 0,
-  };
-
-  // 5. Final response
-  res.status(200).json({
-    success: true,
-    message: `Welcome ${req.user.username}!`,
-    data: {
-      users: {
-        total: usersTotal,
-      },
-
-      documents: {
-        total: documents.total,
-        latest: documents.latest,
-        users: documents.users,
-      },
-
-      flashcards: {
-        total: flashcards.total,
-        latest: flashcards.latest,
-        users: flashcards.users,
-      },
-
-      quizzes: {
-        total: quizzes.total,
-        latest: quizzes.latest,
-        users: quizzes.users,
-      },
-
-      aiFiles: {
-        total: aiFiles.total,
-        latest: aiFiles.latest,
-        tokensUsed: aiFiles.tokensUsed,
-      },
-
-      uploads: {
-        total: r2Stats?.objectCount || 0,
-        storageUsed: r2Stats
-          ? `${(r2Stats.storageBytes / 1024 ** 3).toFixed(2)} GB`
-          : "0 GB",
-        reads: r2Stats?.reads || 0,
-        writes: r2Stats?.writes || 0,
-      },
-    },
-  });
+    });
+  } catch (error) {
+    console.error("Dashboard Stats Fetch Error: ", error);
+    res.status(500).json({
+      success: false,
+      message: "Error generating dashboard statistics",
+      error: error.message,
+    });
+  }
 };
 
 /* -------------------------------------------------------------------------- */

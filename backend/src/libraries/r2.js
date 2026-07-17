@@ -12,6 +12,7 @@ export const r2 = new S3Client({
     accessKeyId: process.env.R2_ACCESS_KEY,
     secretAccessKey: process.env.R2_SECRET_KEY,
   },
+  forcePathStyle: true,
 });
 
 // Upload a file (stream or tmp path)

@@ -4,7 +4,7 @@ import Quiz from "../models/Quiz.js";
 import User from "../models/User.js";
 import AiFiles from "../models/AiFiles.js";
 import Upload from "../models/Upload.js";
-import { deleteFile, getR2UsageStats } from "../libraries/r2.js";
+import { deleteFile } from "../libraries/r2.js";
 
 /* -------------------------------------------------------------------------- */
 /*                                  HELPERS                                   */
